@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 import { Menu, Scissors } from "lucide-react";
 import { useState } from "react";
 
@@ -50,11 +50,16 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right">
-              <Link href="/" className="mr-6 flex items-center space-x-2 mb-6" onClick={() => setIsSheetOpen(false)}>
-                <Scissors className="h-6 w-6 text-primary" />
-                <span className="font-bold">Faded</span>
-              </Link>
-              <div className="flex flex-col gap-4">
+              <SheetHeader>
+                <SheetTitle asChild>
+                  <Link href="/" className="mr-6 flex items-center space-x-2 mb-6" onClick={() => setIsSheetOpen(false)}>
+                    <Scissors className="h-6 w-6 text-primary" />
+                    <span className="font-bold">Faded</span>
+                  </Link>
+                </SheetTitle>
+                <SheetDescription className="sr-only">Main navigation menu</SheetDescription>
+              </SheetHeader>
+              <div className="flex flex-col gap-4 mt-4">
                 {navLinks.map((link) => (
                   <Link
                     key={link.href}
