@@ -13,7 +13,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <section className="relative w-full h-[60vh] md:h-[80vh] flex items-center justify-center text-center text-white">
         <Image
-          src="https://firebasestorage.googleapis.com/v0/b/edenos.firebasestorage.app/o/faded2.jpg?alt=media&token=401f0464-7495-4352-9fd3-13ac3b7b5fb4"
+          src="https://firebasestorage.googleapis.com/v0/b/edenos.firebasestorage.app/o/faded4.jpg?alt=media&token=d0c8efa7-ee56-425c-820a-e046b7133ca2"
           alt="Barbershop interior"
           fill
           className="object-cover -z-10 brightness-50"
@@ -153,7 +153,7 @@ export default function Home() {
               <CardContent className="p-6">
                 <div className="flex items-center mb-4">
                   <Avatar>
-                    <AvatarImage src="https://picsum.photos/id/237/50" alt="User 1" />
+                    <AvatarImage src="" alt="User 1" />
                     <AvatarFallback>JD</AvatarFallback>
                   </Avatar>
                   <div className="ml-4">
@@ -170,7 +170,7 @@ export default function Home() {
               <CardContent className="p-6">
                 <div className="flex items-center mb-4">
                   <Avatar>
-                    <AvatarImage src="https://picsum.photos/id/238/50" alt="User 2" />
+                    <AvatarImage src="" alt="User 2" />
                     <AvatarFallback>MS</AvatarFallback>
                   </Avatar>
                   <div className="ml-4">
@@ -187,7 +187,7 @@ export default function Home() {
               <CardContent className="p-6">
                 <div className="flex items-center mb-4">
                   <Avatar>
-                    <AvatarImage src="https://picsum.photos/id/239/50" alt="User 3" />
+                    <AvatarImage src="" alt="User 3" />
                     <AvatarFallback>CR</AvatarFallback>
                   </Avatar>
                   <div className="ml-4">

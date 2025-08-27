@@ -62,7 +62,7 @@ export const barbers = [
   {
     id: "b1",
     name: "Alex 'The Fade Master' Reyes",
-    avatar: "https://picsum.photos/seed/alex/200",
+    avatar: "",
     rating: 4.9,
     reviews: 124,
     skills: ["Fades", "Tapers", "Modern Styles", "Scissor Work"],
@@ -70,7 +70,7 @@ export const barbers = [
   {
     id: "b2",
     name: "Jay 'Classic Cuts' Santos",
-    avatar: "https://picsum.photos/seed/jay/200",
+    avatar: "",
     rating: 4.8,
     reviews: 98,
     skills: ["Classic Cuts", "Pompadours", "Beard Sculpting", "Hot Towel Shaves"],
@@ -78,7 +78,7 @@ export const barbers = [
   {
     id: "b3",
     name: "Marco 'The Prodigy' Cruz",
-    avatar: "https://picsum.photos/seed/marco/200",
+    avatar: "",
     rating: 4.9,
     reviews: 75,
     skills: ["Creative Designs", "Coloring", "Kids Cuts", "Textured Crops"],
@@ -86,7 +86,7 @@ export const barbers = [
   {
     id: "b4",
     name: "Benny 'The Veteran' Garcia",
-    avatar: "https://picsum.photos/seed/benny/200",
+    avatar: "",
     rating: 5.0,
     reviews: 210,
     skills: ["All-around Expert", "Consultations", "Traditional Barbering", "Shear Over Comb"],
@@ -100,27 +100,27 @@ export const products = [
     name: "Matte Rock Hair Wax",
     description: "Strong hold, no shine. Perfect for textured, natural looks.",
     price: 850,
-    image: "https://picsum.photos/seed/wax1/400"
+    image: "https://firebasestorage.googleapis.com/v0/b/edenos.firebasestorage.app/o/fadedprod1.jpg?alt=media&token=7043c57a-44be-4e56-9e72-68d0293867b6"
   },
   {
     id: "p2",
     name: "High-Shine Pomade",
     description: "Classic, slick-back look with a high-shine finish. Water-based.",
     price: 800,
-    image: "https://picsum.photos/seed/wax2/400"
+    image: "https://firebasestorage.googleapis.com/v0/b/edenos.firebasestorage.app/o/fadedprod1.jpg?alt=media&token=7043c57a-44be-4e56-9e72-68d0293867b6"
   },
   {
     id: "p3",
     name: "Styling Clay",
     description: "Medium hold with a matte finish for a voluminous, reworkable style.",
     price: 900,
-    image: "https://picsum.photos/seed/wax3/400"
+    image: "https://firebasestorage.googleapis.com/v0/b/edenos.firebasestorage.app/o/fadedprod1.jpg?alt=media&token=7043c57a-44be-4e56-9e72-68d0293867b6"
   },
     {
     id: "p4",
     name: "Sea Salt Spray",
     description: "Pre-styler for added texture and volume. Creates a beachy, lived-in look.",
     price: 300,
-    image: "https://picsum.photos/seed/wax4/400"
+    image: "https://firebasestorage.googleapis.com/v0/b/edenos.firebasestorage.app/o/fadedprod1.jpg?alt=media&token=7043c57a-44be-4e56-9e72-68d0293867b6"
   },
 ];
