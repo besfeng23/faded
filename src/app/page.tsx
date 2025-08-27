@@ -62,7 +62,7 @@ export default function Home() {
               </div>
                <div className="flex justify-center">
                 <Image
-                  src="https://picsum.photos/450/450"
+                  src="https://firebasestorage.googleapis.com/v0/b/edenos.firebasestorage.app/o/fadedprod1.jpg?alt=media&token=7043c57a-44be-4e56-9e72-68d0293867b6"
                   width={450}
                   height={450}
                   alt={seaSaltSpray.name}
