@@ -137,10 +137,10 @@ export default function Home() {
                 <div className="flex items-center mb-4">
                   <Avatar>
                     <AvatarImage src="" alt="User 2" />
-                    <AvatarFallback>MS</AvatarFallback>
+                    <AvatarFallback>TJ</AvatarFallback>
                   </Avatar>
                   <div className="ml-4">
-                    <p className="font-semibold">Mike Smith</p>
+                    <p className="font-semibold">Tito J</p>
                      <div className="flex text-primary">
                       <Star /><Star /><Star /><Star /><Star />
                     </div>
