@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <section className="relative w-full h-[60vh] md:h-[80vh] flex items-center justify-center text-center text-white">
         <Image
-          src="https://firebasestorage.googleapis.com/v0/b/edenos.firebasestorage.app/o/faded4.jpg?alt=media&token=d0c8efa7-ee56-425c-820a-e046b7133ca2"
+          src="https://firebasestorage.googleapis.com/v0/b/edenos.firebasestorage.app/o/faded2.jpg?alt=media&token=401f0464-7495-4352-9fd3-13ac3b7b5fb4"
           alt="Barbershop interior"
           fill
           className="object-cover -z-10 brightness-50"
