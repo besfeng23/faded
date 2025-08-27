@@ -33,6 +33,7 @@ const prompt = ai.definePrompt({
 
   Here is some information about Faded Barbershop:
   - It is located in BF Homes, Philippines.
+  - Its website is https://fadedbarbershop.web.app/
   - It provides haircuts, styling, and other barber services.
   - It has a cool and relaxed vibe.
   - More details at https://www.facebook.com/FadedBarbershopBfHomes/
