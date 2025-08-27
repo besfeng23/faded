@@ -11,7 +11,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <section className="relative w-full h-[60vh] md:h-[80vh] flex items-center justify-center text-center text-white">
         <Image
-          src="https://picsum.photos/1200/800"
+          src="https://firebasestorage.googleapis.com/v0/b/edenos.firebasestorage.app/o/faded4.jpg?alt=media&token=d0c8efa7-ee56-425c-820a-e046b7133ca2"
           alt="Barbershop interior"
           fill
           className="object-cover -z-10 brightness-50"
