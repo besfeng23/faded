@@ -21,8 +21,15 @@ const ChatAssistantOutputSchema = z.object({
 });
 export type ChatAssistantOutput = z.infer<typeof ChatAssistantOutputSchema>;
 
-export async function chatAssistant(input: ChatAssistantInput): Promise<ChatAssistantOutput> {
-  return chatAssistantFlow(input);
+export async function chatAssistant(
+  previousState: ChatAssistantOutput,
+  input: FormData
+): Promise<ChatAssistantOutput> {
+  const message = input.get('message');
+  if (!message || typeof message !== 'string') {
+    return {response: 'Please provide a message.'};
+  }
+  return chatAssistantFlow({message});
 }
 
 const prompt = ai.definePrompt({

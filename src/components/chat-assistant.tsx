@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useTransition, useActionState } from "react";
+import { useState, useRef, useEffect, useTransition } from "react";
 import { MessageSquare, Send, Bot, User, Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { chatAssistant } from "@/ai/flows/chat-assistant";
+import { chatAssistant, ChatAssistantOutput } from "@/ai/flows/chat-assistant";
 import { cn } from "@/lib/utils";
 
 type Message = {
@@ -23,26 +23,26 @@ type Message = {
   content: string;
 };
 
-const initialState = {
+const initialState: ChatAssistantOutput = {
   response: "",
 };
 
 export function ChatAssistant() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [formState, setFormState] = useState(initialState);
   const [isPending, startTransition] = useTransition();
-  const [state, formAction] = useActionState(chatAssistant, initialState);
   const formRef = useRef<HTMLFormElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (state.response && messages[messages.length - 1]?.role !== 'assistant') {
+    if (formState.response && messages[messages.length - 1]?.role !== 'assistant') {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: state.response },
+        { role: "assistant", content: formState.response },
       ]);
     }
-  }, [state.response, messages]);
+  }, [formState.response, messages]);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -55,9 +55,10 @@ export function ChatAssistant() {
     if (!userMessage) return;
 
     setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
-
-    startTransition(() => {
-      formAction(formData);
+    
+    startTransition(async () => {
+      const newFormState = await chatAssistant(formState, formData);
+      setFormState(newFormState);
     });
 
     formRef.current?.reset();
