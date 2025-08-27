@@ -1,16 +1,38 @@
+
 export const services = [
   {
     id: "1",
-    name: "Signature Fade",
+    name: "Premium Haircut",
     description: "Our classic fade, tailored to your head shape and style preference. Includes a straight razor lineup.",
-    price: 750,
+    price: 250,
     duration: 45,
+  },
+  {
+    id: "7",
+    name: "Hair Treatment",
+    description: "A deep conditioning treatment to restore hair health and shine.",
+    price: 500,
+    duration: 45,
+  },
+  {
+    id: "8",
+    name: "Premium Haircut & Treatment",
+    description: "The full experience. A premium haircut followed by a deep conditioning treatment.",
+    price: 800,
+    duration: 90,
+  },
+  {
+    id: "5",
+    name: "Premium Shave / Beard Groom",
+    description: "Keep your beard looking its best with a professional trim and lineup.",
+    price: 150,
+    duration: 30,
   },
   {
     id: "2",
     name: "Haircut + Beard Trim",
     description: "A full grooming experience. Get a precision haircut and a perfectly sculpted beard trim.",
-    price: 1100,
+    price: 400,
     duration: 60,
   },
   {
@@ -25,13 +47,6 @@ export const services = [
     name: "Kids Cut",
     description: "A patient and stylish haircut for children under 12.",
     price: 600,
-    duration: 30,
-  },
-  {
-    id: "5",
-    name: "Beard Trim & Shape-up",
-    description: "Keep your beard looking its best with a professional trim and lineup.",
-    price: 450,
     duration: 30,
   },
   {
