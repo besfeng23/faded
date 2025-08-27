@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useTransition } from "react";
-import { useFormState } from "react-dom";
+import { useState, useRef, useEffect, useTransition, useActionState } from "react";
 import { MessageSquare, Send, Bot, User, Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,7 +31,7 @@ export function ChatAssistant() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isPending, startTransition] = useTransition();
-  const [state, formAction] = useFormState(chatAssistant, initialState);
+  const [state, formAction] = useActionState(chatAssistant, initialState);
   const formRef = useRef<HTMLFormElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
