@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { services, products } from "@/lib/data";
-import { ArrowRight, Star, SprayCan } from "lucide-react";
+import { ArrowRight, Star } from "lucide-react";
 
 export default function Home() {
   const seaSaltSpray = products.find(p => p.id === 'p4');
@@ -111,41 +111,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="products" className="w-full py-12 md:py-24 lg:py-32 bg-secondary">
-        <div className="container grid items-center justify-center gap-4 px-4 text-center md:px-6 lg:gap-10">
-          <div className="space-y-3">
-            <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight font-headline">Style at Home</h2>
-            <p className="mx-auto max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              Get that fresh-from-the-barbershop look every day with our premium hairwax and styling products.
-            </p>
-          </div>
-          <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.slice(0,3).map(product => (
-              <Card key={product.id} className="text-left">
-                <CardContent className="p-4">
-                  <Image
-                    src={product.image}
-                    width={400}
-                    height={400}
-                    alt={product.name}
-                    className="rounded-md object-cover aspect-square mb-4"
-                    data-ai-hint="hair product"
-                  />
-                  <h3 className="font-semibold text-lg">{product.name}</h3>
-                  <p className="text-muted-foreground text-sm">{product.description}</p>
-                  <div className="flex justify-between items-center mt-4">
-                    <p className="font-bold text-xl">₱{product.price.toFixed(2)}</p>
-                    <Button asChild>
-                      <Link href="/products">Buy Now</Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-      
       <section id="testimonials" className="w-full py-12 md:py-24 lg:py-32 bg-background">
         <div className="container px-4 md:px-6">
           <h2 className="text-3xl font-bold tracking-tighter text-center sm:text-5xl font-headline mb-12">What Our Clients Say</h2>
