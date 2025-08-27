@@ -44,9 +44,6 @@ export default function Home() {
           <div className="container px-4 md:px-6">
             <div className="grid md:grid-cols-2 gap-8 items-center">
               <div className="text-center md:text-left">
-                 <div className="inline-block rounded-lg bg-primary text-primary-foreground px-3 py-1 text-sm mb-4">
-                  Special Offer
-                </div>
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">
                   Get the Beach Look with our Sea Salt Spray
                 </h2>
