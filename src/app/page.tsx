@@ -65,7 +65,7 @@ export default function Home() {
               </div>
                <div className="flex justify-center">
                 <Image
-                  src={seaSaltSpray.image}
+                  src="https://picsum.photos/450/450"
                   width={450}
                   height={450}
                   alt={seaSaltSpray.name}
