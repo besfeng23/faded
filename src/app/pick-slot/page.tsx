@@ -1,5 +1,7 @@
+
 "use client";
 
+import { Suspense } from "react";
 import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -8,16 +10,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { services, barbers } from "@/lib/data";
 
-// Mock time slots
-const timeSlots = [
-  "09:00 AM", "09:45 AM", "10:30 AM", "11:15 AM",
-  "12:00 PM", "01:30 PM", "02:15 PM", "03:00 PM",
-  "03:45 PM", "04:30 PM", "05:15 PM", "06:00 PM",
-];
-
-const bookedSlots = ["10:30 AM", "03:00 PM"];
-
-export default function PickSlotPage() {
+function PickSlotComponent() {
   const searchParams = useSearchParams();
   const serviceId = searchParams.get("serviceId");
   const barberId = searchParams.get("barberId");
@@ -27,6 +20,15 @@ export default function PickSlotPage() {
 
   const service = services.find((s) => s.id === serviceId);
   const barber = barbers.find((b) => b.id === barberId);
+
+    // Mock time slots
+  const timeSlots = [
+    "09:00 AM", "09:45 AM", "10:30 AM", "11:15 AM",
+    "12:00 PM", "01:30 PM", "02:15 PM", "03:00 PM",
+    "03:45 PM", "04:30 PM", "05:15 PM", "06:00 PM",
+  ];
+
+  const bookedSlots = ["10:30 AM", "03:00 PM"];
 
   if (!service || !barber) {
     return (
@@ -119,4 +121,13 @@ export default function PickSlotPage() {
       </div>
     </div>
   );
+}
+
+
+export default function PickSlotPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PickSlotComponent />
+    </Suspense>
+  )
 }
