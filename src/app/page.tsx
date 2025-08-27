@@ -129,7 +129,7 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-                <p className="text-muted-foreground">"Best fade I've ever had. The attention to detail is insane. Will definitely be back!"</p>
+                <p className="text-muted-foreground">"Just got my haircut here. Great service, definitely value for money. The place isn’t that big but has nice ambience. Staff was really accommodating too. Shoutout to my barber, Harold, who really listened so we could achieve the cut that I wanted — also exceeded my expectations. Will definitely come back. I think I found my new barbershop."</p>
               </CardContent>
             </Card>
             <Card>
