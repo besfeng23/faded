@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { services, products } from "@/lib/data";
-import { ArrowRight, Star } from "lucide-react";
+import { ArrowRight, Star, SprayCan } from "lucide-react";
 
 export default function Home() {
+  const seaSaltSpray = products.find(p => p.id === 'p4');
+
   return (
     <div className="flex flex-col min-h-screen">
       <section className="relative w-full h-[60vh] md:h-[80vh] flex items-center justify-center text-center text-white">
@@ -36,6 +38,45 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {seaSaltSpray && (
+        <section id="promo" className="w-full py-12 md:py-24 bg-primary/10">
+          <div className="container px-4 md:px-6">
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              <div className="text-center md:text-left">
+                 <div className="inline-block rounded-lg bg-primary text-primary-foreground px-3 py-1 text-sm mb-4">
+                  Special Offer
+                </div>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">
+                  Get the Beach Look with our Sea Salt Spray
+                </h2>
+                <p className="mt-4 text-muted-foreground md:text-xl/relaxed">
+                  Experience the volume and texture of our best-selling Sea Salt Spray with any haircut. Love the result? Take a bottle home for just <span className="font-bold text-primary">₱{seaSaltSpray.price.toFixed(2)}!</span>
+                </p>
+                <p className="mt-2 text-sm text-muted-foreground">Stocks are selling fast, get a bottle now!</p>
+                <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                  <Button asChild size="lg">
+                    <Link href="/products">Shop Now</Link>
+                  </Button>
+                   <Button asChild size="lg" variant="outline">
+                    <Link href="/services">Book a Haircut</Link>
+                  </Button>
+                </div>
+              </div>
+               <div className="flex justify-center">
+                <Image
+                  src={seaSaltSpray.image}
+                  width={450}
+                  height={450}
+                  alt={seaSaltSpray.name}
+                  className="rounded-lg object-cover shadow-2xl"
+                  data-ai-hint="hair product"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       <section id="services" className="w-full py-12 md:py-24 lg:py-32 bg-background">
         <div className="container px-4 md:px-6">

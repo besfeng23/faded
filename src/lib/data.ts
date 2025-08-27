@@ -105,7 +105,7 @@ export const products = [
     id: "p4",
     name: "Sea Salt Spray",
     description: "Pre-styler for added texture and volume. Creates a beachy, lived-in look.",
-    price: 750,
+    price: 300,
     image: "https://picsum.photos/seed/wax4/400"
   },
 ];
