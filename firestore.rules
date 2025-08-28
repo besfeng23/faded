@@ -1,0 +1,28 @@
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users can only read and write their own data
+    match /users/{userId} {
+      allow read, update: if request.auth.uid == userId;
+    }
+
+    // Users can create bookings for themselves
+    match /bookings/{bookingId} {
+      allow create: if request.auth.uid == request.resource.data.userId;
+      // Users can read, update, or delete their own bookings
+      allow read, update, delete: if request.auth.uid == resource.data.userId;
+    }
+
+    // Publicly readable collections
+    match /services/{serviceId} {
+      allow read: if true;
+    }
+    match /barbers/{barberId} {
+      allow read: if true;
+    }
+    match /products/{productId} {
+      allow read: if true;
+    }
+  }
+}

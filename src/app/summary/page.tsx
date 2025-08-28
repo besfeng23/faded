@@ -1,19 +1,102 @@
+
+"use client";
+
+import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { services, barbers } from "@/lib/data";
 import Link from "next/link";
+import { useAuth } from '@/hooks/use-auth';
+import { useToast } from '@/hooks/use-toast';
+import { addDoc, collection } from 'firebase/firestore';
+import { db } from '@/lib/firebase-client';
+import { Loader2 } from 'lucide-react';
+import { Suspense } from 'react';
 
-export default function SummaryPage({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined }}) {
-  const serviceId = searchParams.serviceId as string;
-  const barberId = searchParams.barberId as string;
-  const dateStr = searchParams.date as string;
-  const time = searchParams.time as string;
+
+function SummaryComponent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { user, loading: authLoading } = useAuth();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [notes, setNotes] = useState("");
+
+  const serviceId = searchParams.get("serviceId");
+  const barberId = searchParams.get("barberId");
+  const dateStr = searchParams.get("date");
+  const time = searchParams.get("time");
 
   const service = services.find((s) => s.id === serviceId);
   const barber = barbers.find((b) => b.id === barberId);
-  const date = new Date(dateStr);
+  const date = dateStr ? new Date(dateStr) : null;
+
+  const handleConfirmBooking = async () => {
+    if (!user) {
+      toast({
+        title: "Authentication Error",
+        description: "You must be logged in to book an appointment.",
+        variant: "destructive",
+      });
+      router.push('/login');
+      return;
+    }
+
+    if (!service || !barber || !date || !time) {
+      toast({
+        title: "Booking Error",
+        description: "Incomplete booking details. Please start over.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await addDoc(collection(db, "bookings"), {
+        userId: user.uid,
+        serviceId: service.id,
+        serviceName: service.name,
+        barberId: barber.id,
+        barberName: barber.name,
+        date: date.toISOString(),
+        time,
+        price: service.price,
+        notes,
+        createdAt: new Date().toISOString(),
+        status: "confirmed"
+      });
+      
+      toast({
+        title: "Booking Successful!",
+        description: "Your appointment has been confirmed.",
+      });
+
+      router.push('/booking-success');
+
+    } catch (error) {
+      console.error("Error creating booking: ", error);
+      toast({
+        title: "Booking Failed",
+        description: "Could not save your appointment. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (authLoading) {
+     return (
+      <div className="flex justify-center items-center h-[calc(100vh-8rem)]">
+        <Loader2 className="h-16 w-16 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   if (!service || !barber || !date || !time) {
     return (
@@ -59,7 +142,14 @@ export default function SummaryPage({ searchParams }: { searchParams: { [key: st
 
           <div>
             <label htmlFor="notes" className="text-sm font-medium text-muted-foreground">Notes for your barber (optional)</label>
-            <Textarea id="notes" placeholder="e.g., specific style requests, allergies..." className="mt-2" />
+            <Textarea 
+              id="notes" 
+              placeholder="e.g., specific style requests, allergies..." 
+              className="mt-2" 
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              disabled={loading}
+            />
           </div>
 
           <Separator />
@@ -76,12 +166,21 @@ export default function SummaryPage({ searchParams }: { searchParams: { [key: st
           </div>
           
           <div className="fixed bottom-0 left-0 right-0 p-4 bg-background border-t md:static md:p-0 md:border-none">
-            <Button asChild className="w-full h-12 text-lg">
-              <Link href="/booking-success">Confirm Booking</Link>
+            <Button onClick={handleConfirmBooking} className="w-full h-12 text-lg" disabled={loading || authLoading}>
+              {loading ? <Loader2 className="animate-spin" /> : "Confirm Booking"}
             </Button>
           </div>
         </CardContent>
       </Card>
     </div>
   );
+}
+
+
+export default function SummaryPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center h-[calc(100vh-8rem)]"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div>}>
+      <SummaryComponent />
+    </Suspense>
+  )
 }

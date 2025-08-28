@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from "@/components/ui/button";
@@ -10,48 +10,79 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { db } from '@/lib/firebase-client';
+import { collection, query, where, getDocs, orderBy, Timestamp } from 'firebase/firestore';
 
-const upcomingBookings = [
-  {
-    id: "1",
-    service: "Signature Fade",
-    barber: "Alex",
-    date: "2024-08-15",
-    time: "2:00 PM",
-    price: 750,
-  },
-  {
-    id: "2",
-    service: "Haircut + Beard Trim",
-    barber: "Jay",
-    date: "2024-09-02",
-    time: "11:30 AM",
-    price: 1100,
-  },
-];
-
-const pastBookings = [
-  {
-    id: "3",
-    service: "Signature Fade",
-    barber: "Alex",
-    date: "2024-07-20",
-    time: "3:00 PM",
-    price: 750,
-  },
-];
+interface Booking {
+    id: string;
+    serviceName: string;
+    barberName: string;
+    date: string;
+    time: string;
+    price: number;
+    status: string;
+}
 
 export default function MyBookingsPage() {
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([]);
+  const [pastBookings, setPastBookings] = useState<Booking[]>([]);
+  const [loadingBookings, setLoadingBookings] = useState(true);
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       router.push('/login');
     }
-  }, [user, loading, router]);
+  }, [user, authLoading, router]);
 
-  if (loading) {
+  useEffect(() => {
+    if (user) {
+      const fetchBookings = async () => {
+        setLoadingBookings(true);
+        try {
+          const q = query(collection(db, "bookings"), where("userId", "==", user.uid));
+          const querySnapshot = await getDocs(q);
+          const now = new Date();
+          const allUserBookings: Booking[] = [];
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const bookingDate = new Date(data.date);
+            // Combine date and time for accurate comparison
+            const [hours, minutes, period] = data.time.match(/(\d+):(\d+) (AM|PM)/).slice(1);
+            let hour = parseInt(hours);
+            if (period === 'PM' && hour !== 12) hour += 12;
+            if (period === 'AM' && hour === 12) hour = 0;
+            bookingDate.setHours(hour, parseInt(minutes));
+
+            allUserBookings.push({
+              id: doc.id,
+              serviceName: data.serviceName,
+              barberName: data.barberName,
+              date: data.date,
+              time: data.time,
+              price: data.price,
+              status: bookingDate < now ? 'past' : 'upcoming',
+            });
+          });
+
+          const upcoming = allUserBookings.filter(b => b.status === 'upcoming').sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+          const past = allUserBookings.filter(b => b.status === 'past').sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+          
+          setUpcomingBookings(upcoming);
+          setPastBookings(past);
+
+        } catch (error) {
+          console.error("Error fetching bookings:", error);
+        } finally {
+          setLoadingBookings(false);
+        }
+      };
+      fetchBookings();
+    }
+  }, [user]);
+
+  if (authLoading || loadingBookings) {
     return (
       <div className="flex justify-center items-center h-[calc(100vh-8rem)]">
         <Loader2 className="h-16 w-16 animate-spin text-primary" />
@@ -60,8 +91,6 @@ export default function MyBookingsPage() {
   }
 
   if (!user) {
-    // This will be briefly rendered before the redirect happens.
-    // You could also return a dedicated "access denied" component.
     return (
         <div className="flex justify-center items-center h-[calc(100vh-8rem)]">
             <p>Redirecting to login...</p>
@@ -87,8 +116,8 @@ export default function MyBookingsPage() {
               upcomingBookings.map((booking) => (
                 <Card key={booking.id}>
                   <CardHeader>
-                    <CardTitle>{booking.service}</CardTitle>
-                    <CardDescription>with {booking.barber}</CardDescription>
+                    <CardTitle>{booking.serviceName}</CardTitle>
+                    <CardDescription>with {booking.barberName}</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <div className="flex justify-between">
@@ -128,8 +157,8 @@ export default function MyBookingsPage() {
               pastBookings.map((booking) => (
                 <Card key={booking.id} className="opacity-70">
                   <CardHeader>
-                    <CardTitle>{booking.service}</CardTitle>
-                    <CardDescription>with {booking.barber}</CardDescription>
+                    <CardTitle>{booking.serviceName}</CardTitle>
+                    <CardDescription>with {booking.barberName}</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <div className="flex justify-between">
@@ -142,7 +171,9 @@ export default function MyBookingsPage() {
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-end">
-                      <Button>Rebook</Button>
+                      <Button asChild>
+                         <Link href={`/select-barber?serviceId=${services.find(s => s.name === booking.serviceName)?.id}`}>Rebook</Link>
+                      </Button>
                   </CardFooter>
                 </Card>
               ))
