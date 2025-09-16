@@ -3,7 +3,14 @@
 
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetTrigger,
+} from "./ui/sheet";
 import { Menu, Scissors, LogOut } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
@@ -24,6 +31,7 @@ export function Header() {
   const navLinks = [
     { href: "/services", label: "Services" },
     { href: "/products", label: "Products" },
+    { href: "/social", label: "Social" },
     { href: "/my-bookings", label: "My Bookings" },
   ];
 
@@ -92,11 +100,18 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right">
-               <div className="flex flex-col h-full">
-                <Link href="/" className="flex items-center space-x-2 mb-6" onClick={() => setIsSheetOpen(false)}>
-                  <Scissors className="h-6 w-6 text-primary" />
-                  <span className="font-bold">Faded</span>
-                </Link>
+              <SheetHeader>
+                <SheetTitle>
+                   <Link href="/" className="flex items-center space-x-2" onClick={() => setIsSheetOpen(false)}>
+                    <Scissors className="h-6 w-6 text-primary" />
+                    <span className="font-bold">Faded</span>
+                  </Link>
+                </SheetTitle>
+                <SheetDescription>
+                  Book your fade in 3 taps.
+                </SheetDescription>
+              </SheetHeader>
+               <div className="flex flex-col h-full py-4">
                 <div className="flex flex-col gap-4 flex-grow">
                   {navLinks.map((link) => (
                     <Link
