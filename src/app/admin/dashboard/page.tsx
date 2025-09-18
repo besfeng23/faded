@@ -51,13 +51,15 @@ export default function AdminDashboardPage() {
             </Button>
           </CardContent>
         </Card>
-        <Card className="opacity-50">
+        <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><Users className="h-6 w-6" />Barber Management</CardTitle>
-            <CardDescription>Add, edit, or remove barbers and their schedules. (Coming Soon)</CardDescription>
+            <CardDescription>Add, edit, or remove barbers and their schedules.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button disabled>Manage Barbers</Button>
+            <Button asChild>
+              <Link href="/admin/barbers">Manage Barbers</Link>
+            </Button>
           </CardContent>
         </Card>
         <Card className="opacity-50">
