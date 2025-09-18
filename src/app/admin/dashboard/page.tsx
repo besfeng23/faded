@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Users, LayoutDashboard, Instagram, Facebook, MessageSquareText, Scissors } from "lucide-react";
+import { Users, LayoutDashboard, Instagram, Facebook, MessageSquareText, Scissors, Calendar } from "lucide-react";
 
 export default function AdminDashboardPage() {
   return (
@@ -11,6 +11,17 @@ export default function AdminDashboardPage() {
         <p className="text-muted-foreground">Manage your barbershop operations.</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Card>
+           <CardHeader>
+            <CardTitle className="flex items-center gap-2"><Calendar className="h-6 w-6" />Booking Management</CardTitle>
+            <CardDescription>View and manage all upcoming and past appointments.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button asChild>
+              <Link href="/admin/bookings">Manage Bookings</Link>
+            </Button>
+          </CardContent>
+        </Card>
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
