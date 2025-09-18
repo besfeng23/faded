@@ -11,7 +11,20 @@ import { Separator } from "@/components/ui/separator";
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { db } from '@/lib/firebase-client';
-import { collection, query, where, getDocs, orderBy, Timestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { useToast } from '@/hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Badge } from '@/components/ui/badge';
 
 interface Booking {
     id: string;
@@ -20,92 +33,64 @@ interface Booking {
     date: string;
     time: string;
     price: number;
-    status: string;
+    status: 'confirmed' | 'checked-in' | 'completed' | 'cancelled';
     serviceId: string;
-}
-
-interface Service {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  duration: number;
 }
 
 export default function MyBookingsPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([]);
-  const [pastBookings, setPastBookings] = useState<Booking[]>([]);
-  const [services, setServices] = useState<Service[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [loadingBookings, setLoadingBookings] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/login');
     }
   }, [user, authLoading, router]);
+  
+  const fetchBookings = async () => {
+    if (!user) return;
+    setLoadingBookings(true);
+    try {
+      const q = query(collection(db, "bookings"), where("userId", "==", user.uid));
+      const querySnapshot = await getDocs(q);
+      const allUserBookings: Booking[] = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Booking));
+      
+      allUserBookings.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      
+      setBookings(allUserBookings);
 
-  useEffect(() => {
-    const fetchServices = async () => {
-      const servicesCollection = collection(db, 'services');
-      const serviceSnapshot = await getDocs(servicesCollection);
-      const servicesList = serviceSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Service));
-      setServices(servicesList);
-    };
-
-    fetchServices();
-  }, []);
-
-  useEffect(() => {
-    if (user) {
-      const fetchBookings = async () => {
-        setLoadingBookings(true);
-        try {
-          const q = query(collection(db, "bookings"), where("userId", "==", user.uid));
-          const querySnapshot = await getDocs(q);
-          const now = new Date();
-          const allUserBookings: Booking[] = [];
-          querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            const bookingDate = new Date(data.date);
-            
-            const timeParts = data.time.match(/(\d+):(\d+) (AM|PM)/);
-            if (timeParts) {
-                const [, hours, minutes, period] = timeParts;
-                let hour = parseInt(hours);
-                if (period === 'PM' && hour !== 12) hour += 12;
-                if (period === 'AM' && hour === 12) hour = 0;
-                bookingDate.setHours(hour, parseInt(minutes));
-            }
-
-            allUserBookings.push({
-              id: doc.id,
-              serviceId: data.serviceId,
-              serviceName: data.serviceName,
-              barberName: data.barberName,
-              date: data.date,
-              time: data.time,
-              price: data.price,
-              status: bookingDate < now ? 'past' : 'upcoming',
-            });
-          });
-
-          const upcoming = allUserBookings.filter(b => b.status === 'upcoming').sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-          const past = allUserBookings.filter(b => b.status === 'past').sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-          
-          setUpcomingBookings(upcoming);
-          setPastBookings(past);
-
-        } catch (error) {
-          console.error("Error fetching bookings:", error);
-        } finally {
-          setLoadingBookings(false);
-        }
-      };
-      fetchBookings();
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+      toast({ title: "Error", description: "Could not fetch your bookings.", variant: "destructive" });
+    } finally {
+      setLoadingBookings(false);
     }
+  };
+
+  useEffect(() => {
+    fetchBookings();
   }, [user]);
+
+  const handleUpdateStatus = async (bookingId: string, newStatus: Booking['status']) => {
+    try {
+        const bookingRef = doc(db, "bookings", bookingId);
+        await updateDoc(bookingRef, { 
+            status: newStatus,
+            updatedAt: new Date().toISOString()
+        });
+        toast({ title: "Booking Updated", description: `Your appointment status is now: ${newStatus}.` });
+        fetchBookings(); // Refresh the bookings list
+    } catch (error) {
+        console.error(`Error updating booking status to ${newStatus}:`, error);
+        toast({ title: "Update Failed", description: "Could not update the booking status.", variant: "destructive" });
+    }
+  };
+  
+  const upcomingBookings = bookings.filter(b => b.status === 'confirmed' || b.status === 'checked-in');
+  const pastBookings = bookings.filter(b => b.status === 'completed' || b.status === 'cancelled');
 
   if (authLoading || loadingBookings) {
     return (
@@ -122,6 +107,23 @@ export default function MyBookingsPage() {
         </div>
     );
   }
+  
+  const StatusBadge = ({ status }: { status: Booking['status'] }) => {
+    const variant: "default" | "secondary" | "destructive" =
+      status === 'confirmed' ? 'default' :
+      status === 'checked-in' ? 'default' :
+      status === 'cancelled' ? 'destructive' :
+      'secondary';
+      
+    const statusText = {
+      'confirmed': 'Confirmed',
+      'checked-in': 'Checked-In',
+      'completed': 'Completed',
+      'cancelled': 'Cancelled'
+    }
+
+    return <Badge variant={variant} className="capitalize absolute top-4 right-4">{statusText[status]}</Badge>;
+  };
 
   return (
     <div className="container mx-auto py-12 px-4">
@@ -133,13 +135,14 @@ export default function MyBookingsPage() {
       <Tabs defaultValue="upcoming" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-          <TabsTrigger value="past">Past</TabsTrigger>
+          <TabsTrigger value="past">Past & Cancelled</TabsTrigger>
         </TabsList>
         <TabsContent value="upcoming">
           <div className="grid gap-6 mt-6">
             {upcomingBookings.length > 0 ? (
               upcomingBookings.map((booking) => (
-                <Card key={booking.id}>
+                <Card key={booking.id} className="relative">
+                  <StatusBadge status={booking.status} />
                   <CardHeader>
                     <CardTitle>{booking.serviceName}</CardTitle>
                     <CardDescription>with {booking.barberName}</CardDescription>
@@ -159,10 +162,28 @@ export default function MyBookingsPage() {
                       <span>₱{booking.price.toFixed(2)}</span>
                     </div>
                   </CardContent>
-                  <CardFooter className="flex justify-end gap-2">
-                      <Button variant="outline">I'm here!</Button>
-                      <Button variant="destructive">Cancel</Button>
-                  </CardFooter>
+                  {booking.status === 'confirmed' && (
+                     <CardFooter className="flex justify-end gap-2">
+                       <Button variant="outline" onClick={() => handleUpdateStatus(booking.id, 'checked-in')}>I'm here!</Button>
+                       <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="destructive">Cancel</Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Are you sure you want to cancel?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This action cannot be undone. Your appointment for {booking.serviceName} on {new Date(booking.date).toLocaleDateString()} at {booking.time} will be cancelled.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Go Back</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleUpdateStatus(booking.id, 'cancelled')}>Confirm Cancellation</AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                    </CardFooter>
+                  )}
                 </Card>
               ))
             ) : (
@@ -180,7 +201,8 @@ export default function MyBookingsPage() {
           <div className="grid gap-6 mt-6">
             {pastBookings.length > 0 ? (
               pastBookings.map((booking) => (
-                <Card key={booking.id} className="opacity-70">
+                <Card key={booking.id} className="opacity-70 relative">
+                  <StatusBadge status={booking.status} />
                   <CardHeader>
                     <CardTitle>{booking.serviceName}</CardTitle>
                     <CardDescription>with {booking.barberName}</CardDescription>
@@ -214,3 +236,5 @@ export default function MyBookingsPage() {
     </div>
   );
 }
+
+    

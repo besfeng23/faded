@@ -59,6 +59,7 @@ function SummaryComponent() {
     try {
       await addDoc(collection(db, "bookings"), {
         userId: user.uid,
+        customerName: user.displayName || 'N/A',
         serviceId: service.id,
         serviceName: service.name,
         barberId: barber.id,
@@ -184,3 +185,5 @@ export default function SummaryPage() {
     </Suspense>
   )
 }
+
+    

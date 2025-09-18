@@ -146,7 +146,8 @@ export default function DmToBookingPage() {
                 notes: `Booked by admin. Original notes: ${data.notes || ""}`,
                 customerName: data.customerName, // Add customer name field
                 createdAt: new Date().toISOString(),
-                status: "confirmed"
+                status: "confirmed",
+                updatedAt: new Date().toISOString(),
             });
             
             toast({
