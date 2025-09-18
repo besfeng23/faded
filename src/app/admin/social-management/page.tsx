@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -7,10 +8,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Facebook, Instagram, Image as ImageIcon, Loader2 } from "lucide-react";
+import { Facebook, Instagram, Image as ImageIcon, Loader2, Wand2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { generateSocialPost } from "@/ai/flows/generate-social-post";
 
 
 export default function SocialManagementPage() {
@@ -19,6 +21,33 @@ export default function SocialManagementPage() {
   const [isConnected, setIsConnected] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const { toast } = useToast();
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [aiTopic, setAiTopic] = useState("");
+
+  const handleGeneratePost = async () => {
+    if (!aiTopic.trim()) {
+      toast({
+        title: "Empty Topic",
+        description: "Please enter a topic for the AI to write about.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setIsGenerating(true);
+    try {
+      const result = await generateSocialPost({ topic: aiTopic });
+      setPostContent(result.postContent);
+    } catch (error) {
+      console.error("Error generating post:", error);
+      toast({
+        title: "AI Generation Failed",
+        description: "Could not generate post content. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   const handlePublish = async () => {
     if (!isConnected) {
@@ -45,6 +74,7 @@ export default function SocialManagementPage() {
     setIsPublishing(false);
     setPostContent("");
     setImageFile(null);
+    setAiTopic("");
     
     toast({
       title: "Post Published!",
@@ -53,7 +83,7 @@ export default function SocialManagementPage() {
   };
 
   return (
-    <div className="container mx-auto py-12 px-4 max-w-4xl">
+    <div className="container mx-auto py-12 px-4 max-w-6xl">
        <div className="mb-8">
          <Button asChild variant="outline" size="sm" className="mb-4">
           <Link href="/admin/dashboard">
@@ -68,7 +98,7 @@ export default function SocialManagementPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="md:col-span-1">
+        <div className="md:col-span-1 space-y-8">
           <Card>
             <CardHeader>
               <CardTitle>Connections</CardTitle>
@@ -92,6 +122,25 @@ export default function SocialManagementPage() {
                     <Instagram className="h-6 w-6 text-pink-600" />
                     <span className="font-semibold text-muted-foreground">Instagram (via Facebook)</span>
                 </div>
+            </CardContent>
+          </Card>
+           <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Wand2 /> AI Content Generator</CardTitle>
+                <CardDescription>Let AI draft your next social media post.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+                <Label htmlFor="ai-topic">Post Topic</Label>
+                <Textarea 
+                    id="ai-topic"
+                    placeholder="e.g., Promote our new sea salt spray, Weekend slot availability, Barber spotlight on Alex"
+                    value={aiTopic}
+                    onChange={(e) => setAiTopic(e.target.value)}
+                    disabled={isGenerating}
+                />
+                <Button className="w-full" onClick={handleGeneratePost} disabled={isGenerating}>
+                    {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : "Generate Content"}
+                </Button>
             </CardContent>
           </Card>
         </div>
