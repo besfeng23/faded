@@ -62,13 +62,15 @@ export default function AdminDashboardPage() {
             </Button>
           </CardContent>
         </Card>
-        <Card className="opacity-50">
+        <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><LayoutDashboard className="h-6 w-6" />Analytics</CardTitle>
-            <CardDescription>View shop performance and booking trends. (Coming Soon)</CardDescription>
+            <CardDescription>View shop performance and booking trends.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button disabled>View Analytics</Button>
+            <Button asChild>
+              <Link href="/admin/analytics">View Analytics</Link>
+            </Button>
           </CardContent>
         </Card>
       </div>
