@@ -12,7 +12,6 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import {
   signInWithPopup,
-  GoogleAuthProvider,
   FacebookAuthProvider,
   RecaptchaVerifier,
   signInWithPhoneNumber,
@@ -20,14 +19,6 @@ import {
 } from "firebase/auth";
 import { auth } from '@/lib/firebase-client';
 
-const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg role="img" viewBox="0 0 24 24" {...props}>
-    <path
-      fill="currentColor"
-      d="M12.48 10.92v3.28h7.84c-.24 1.84-.85 3.18-1.73 4.1-1.05 1.05-2.36 1.95-4.25 1.95-3.37 0-6.13-2.73-6.13-6.13s2.76-6.13 6.13-6.13c1.88 0 3.13.79 3.86 1.5l2.64-2.58C16.97 1.01 15.08 0 12.48 0 5.88 0 .02 5.88.02 12.48s5.86 12.48 12.46 12.48c6.92 0 11.72-4.82 11.72-12.03 0-.76-.06-1.49-.17-2.18z"
-    />
-  </svg>
-);
 
 const FacebookIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg role="img" viewBox="0 0 24 24" {...props}>
@@ -61,18 +52,6 @@ export default function LoginPage() {
       }
     });
   }, []);
-
-  const handleGoogleSignIn = async () => {
-    const provider = new GoogleAuthProvider();
-    try {
-      await signInWithPopup(auth, provider);
-      toast({ title: "Sign in successful!" });
-      router.push('/my-bookings');
-    } catch (error) {
-      console.error("Error signing in with Google: ", error);
-      toast({ title: "Sign in failed.", description: "Could not sign in with Google.", variant: "destructive" });
-    }
-  };
 
   const handleFacebookSignIn = async () => {
     const provider = new FacebookAuthProvider();
@@ -130,14 +109,10 @@ export default function LoginPage() {
           <CardDescription>Sign in to manage your bookings.</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
-          <div className="grid grid-cols-2 gap-2">
-            <Button variant="outline" onClick={handleGoogleSignIn}>
-              <GoogleIcon className="mr-2 h-4 w-4" />
-              Google
-            </Button>
+          <div className="grid gap-2">
             <Button variant="outline" onClick={handleFacebookSignIn}>
               <FacebookIcon className="mr-2 h-4 w-4" />
-              Facebook
+              Continue with Facebook
             </Button>
           </div>
           <p className="text-xs text-muted-foreground text-center">Use Facebook to sign in with your Instagram account.</p>
