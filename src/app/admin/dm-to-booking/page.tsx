@@ -171,7 +171,7 @@ export default function DmToBookingPage() {
                 description: `${data.customerName}'s appointment has been confirmed.`,
             });
 
-            router.push('/booking-success');
+            router.push('/admin/bookings');
 
         } catch (error) {
             console.error("Error creating booking: ", error);
@@ -257,7 +257,7 @@ export default function DmToBookingPage() {
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>Service</FormLabel>
-                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                    <Select onValueChange={field.onChange} value={field.value}>
                                                         <FormControl>
                                                             <SelectTrigger>
                                                                 <SelectValue placeholder="Select a service" />
@@ -355,7 +355,7 @@ export default function DmToBookingPage() {
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>Assign Barber</FormLabel>
-                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                    <Select onValueChange={field.onChange} value={field.value}>
                                                          <FormControl>
                                                             <SelectTrigger>
                                                                 <SelectValue placeholder="Select a barber" />
@@ -398,5 +398,4 @@ export default function DmToBookingPage() {
     );
 }
 
-    
     
