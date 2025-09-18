@@ -15,7 +15,6 @@ import { ArrowLeft, Bot, Loader2, User, Wand2, Calendar as CalendarIcon } from "
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { parseBookingRequest, ParseBookingRequestOutput } from "@/ai/flows/parse-booking-request";
-import { services } from "@/lib/data";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -28,6 +27,12 @@ import { db } from "@/lib/firebase-client";
 interface Barber {
   id: string;
   name: string;
+}
+
+interface Service {
+    id: string;
+    name: string;
+    price: number;
 }
 
 const bookingFormSchema = z.object({
@@ -46,6 +51,7 @@ export default function DmToBookingPage() {
     const [isParsing, setIsParsing] = useState(false);
     const [parsedData, setParsedData] = useState<ParseBookingRequestOutput | null>(null);
     const [barbers, setBarbers] = useState<Barber[]>([]);
+    const [services, setServices] = useState<Service[]>([]);
     const { toast } = useToast();
     const router = useRouter();
 
@@ -70,7 +76,17 @@ export default function DmToBookingPage() {
                 toast({ variant: "destructive", title: "Error fetching barbers", description: "Could not load barbers." });
             }
         };
+        const fetchServices = async () => {
+            try {
+                const querySnapshot = await getDocs(collection(db, "services"));
+                const servicesData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Service));
+                setServices(servicesData);
+            } catch (error) {
+                toast({ variant: "destructive", title: "Error fetching services", description: "Could not load services." });
+            }
+        }
         fetchBarbers();
+        fetchServices();
     }, [toast]);
 
 
@@ -92,7 +108,7 @@ export default function DmToBookingPage() {
             form.setValue("bookingTime", parsedData.requestedTime.includes("not specified") ? "" : parsedData.requestedTime);
             form.setValue("notes", parsedData.notes || "");
         }
-    }, [parsedData, form]);
+    }, [parsedData, form, services]);
 
     const handleParseRequest = async () => {
         if (!message.trim()) {
@@ -248,9 +264,13 @@ export default function DmToBookingPage() {
                                                             </SelectTrigger>
                                                         </FormControl>
                                                         <SelectContent>
-                                                            {services.map(service => (
-                                                                <SelectItem key={service.id} value={service.id}>{service.name}</SelectItem>
-                                                            ))}
+                                                            {services.length === 0 ? (
+                                                                <SelectItem value="loading" disabled>Loading services...</SelectItem>
+                                                            ) : (
+                                                                services.map(service => (
+                                                                    <SelectItem key={service.id} value={service.id}>{service.name}</SelectItem>
+                                                                ))
+                                                            )}
                                                         </SelectContent>
                                                     </Select>
                                                      <p className="text-xs text-muted-foreground mt-1">AI suggested: {parsedData.requestedService}</p>
@@ -378,4 +398,5 @@ export default function DmToBookingPage() {
     );
 }
 
+    
     
