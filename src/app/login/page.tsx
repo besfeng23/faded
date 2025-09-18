@@ -13,6 +13,7 @@ import { useAuth } from '@/hooks/use-auth';
 import {
   signInWithPopup,
   GoogleAuthProvider,
+  FacebookAuthProvider,
   RecaptchaVerifier,
   signInWithPhoneNumber,
   ConfirmationResult
@@ -28,14 +29,14 @@ const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-const AppleIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg role="img" viewBox="0 0 24 24" {...props}>
-    <path
-      fill="currentColor"
-      d="M12.15,2.52a4.46,4.46,0,0,0-3.33,1.52,4.38,4.38,0,0,0-1.5,3.41,5.25,5.25,0,0,0,1.94,4.1,4.52,4.52,0,0,0,3.3,1.35,1.21,1.21,0,0,1,.84.27,1.17,1.17,0,0,1,.37.85v.19a10.87,10.87,0,0,0-2.31.34,11.2,11.2,0,0,0-5.32,3.15,10.63,10.63,0,0,0-3.21,6.81H12.1a11.16,11.16,0,0,1,2.24-4.33,10.83,10.83,0,0,1,4.4-3.18,1.1,1.1,0,0,0,.58-1,5.23,5.23,0,0,0-3-4.43A4.2,4.2,0,0,0,12.15,2.52Zm.16-1.55a1.7,1.7,0,0,0-1.74.84,1.86,1.86,0,0,0-.7,1.59,1.6,1.6,0,0,0,.55,1.3,1.75,1.75,0,0,0,1.41.56,1.73,1.73,0,0,0,1.74-.86,1.88,1.88,0,0,0,.7-1.58,1.63,1.63,0,0,0-.55-1.3A1.75,1.75,0,0,0,12.31.97Z"
-    />
-  </svg>
+const FacebookIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg role="img" viewBox="0 0 24 24" {...props}>
+        <path 
+        fill="currentColor"
+        d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/>
+    </svg>
 );
+
 
 export default function LoginPage() {
   const { user } = useAuth();
@@ -70,6 +71,23 @@ export default function LoginPage() {
     } catch (error) {
       console.error("Error signing in with Google: ", error);
       toast({ title: "Sign in failed.", description: "Could not sign in with Google.", variant: "destructive" });
+    }
+  };
+
+  const handleFacebookSignIn = async () => {
+    const provider = new FacebookAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      toast({ title: "Sign in successful!" });
+      router.push('/my-bookings');
+    } catch (error) {
+      console.error("Error signing in with Facebook: ", error);
+      // Handle specific errors, like account-exists-with-different-credential
+      if ((error as any).code === 'auth/account-exists-with-different-credential') {
+        toast({ title: "Sign in failed.", description: "An account already exists with the same email address but different sign-in credentials.", variant: "destructive" });
+      } else {
+        toast({ title: "Sign in failed.", description: "Could not sign in with Facebook.", variant: "destructive" });
+      }
     }
   };
 
@@ -117,11 +135,12 @@ export default function LoginPage() {
               <GoogleIcon className="mr-2 h-4 w-4" />
               Google
             </Button>
-            <Button variant="outline" disabled>
-              <AppleIcon className="mr-2 h-4 w-4" />
-              Apple
+            <Button variant="outline" onClick={handleFacebookSignIn}>
+              <FacebookIcon className="mr-2 h-4 w-4" />
+              Facebook
             </Button>
           </div>
+          <p className="text-xs text-muted-foreground text-center">Use Facebook to sign in with your Instagram account.</p>
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t" />
