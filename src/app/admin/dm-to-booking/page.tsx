@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -14,15 +15,20 @@ import { ArrowLeft, Bot, Loader2, User, Wand2, Calendar as CalendarIcon } from "
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { parseBookingRequest, ParseBookingRequestOutput } from "@/ai/flows/parse-booking-request";
-import { services, barbers } from "@/lib/data";
+import { services } from "@/lib/data";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase-client";
+
+interface Barber {
+  id: string;
+  name: string;
+}
 
 const bookingFormSchema = z.object({
     customerName: z.string().min(1, "Customer name is required."),
@@ -39,6 +45,7 @@ export default function DmToBookingPage() {
     const [message, setMessage] = useState("");
     const [isParsing, setIsParsing] = useState(false);
     const [parsedData, setParsedData] = useState<ParseBookingRequestOutput | null>(null);
+    const [barbers, setBarbers] = useState<Barber[]>([]);
     const { toast } = useToast();
     const router = useRouter();
 
@@ -52,6 +59,20 @@ export default function DmToBookingPage() {
             notes: "",
         },
     });
+
+    useEffect(() => {
+        const fetchBarbers = async () => {
+            try {
+                const querySnapshot = await getDocs(collection(db, "barbers"));
+                const barbersData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Barber));
+                setBarbers(barbersData);
+            } catch (error) {
+                toast({ variant: "destructive", title: "Error fetching barbers", description: "Could not load barbers." });
+            }
+        };
+        fetchBarbers();
+    }, [toast]);
+
 
     useEffect(() => {
         if (parsedData) {
@@ -320,9 +341,13 @@ export default function DmToBookingPage() {
                                                             </SelectTrigger>
                                                         </FormControl>
                                                         <SelectContent>
-                                                            {barbers.map(barber => (
-                                                                <SelectItem key={barber.id} value={barber.id}>{barber.name}</SelectItem>
-                                                            ))}
+                                                            {barbers.length === 0 ? (
+                                                                <SelectItem value="loading" disabled>Loading barbers...</SelectItem>
+                                                            ) : (
+                                                                barbers.map(barber => (
+                                                                    <SelectItem key={barber.id} value={barber.id}>{barber.name}</SelectItem>
+                                                                ))
+                                                            )}
                                                         </SelectContent>
                                                     </Select>
                                                     <FormMessage />
@@ -351,3 +376,5 @@ export default function DmToBookingPage() {
         </div>
     );
 }
+
+    
