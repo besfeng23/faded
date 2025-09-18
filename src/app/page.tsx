@@ -1,14 +1,62 @@
 
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { services, products } from "@/lib/data";
-import { ArrowRight, Star } from "lucide-react";
+import { ArrowRight, Star, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { collection, getDocs, limit, query, where } from "firebase/firestore";
+import { db } from "@/lib/firebase-client";
+
+interface Service {
+  id: string;
+  name: string;
+  price: number;
+  duration: number;
+}
+
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+}
 
 export default function Home() {
-  const seaSaltSpray = products.find(p => p.id === 'p4');
+  const [seaSaltSpray, setSeaSaltSpray] = useState<Product | null>(null);
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // Fetch Sea Salt Spray product
+        const productsQuery = query(collection(db, "products"), where("name", "==", "Sea Salt Spray"), limit(1));
+        const productsSnapshot = await getDocs(productsQuery);
+        if (!productsSnapshot.empty) {
+          const productData = productsSnapshot.docs[0].data() as Omit<Product, 'id'>;
+          setSeaSaltSpray({ id: productsSnapshot.docs[0].id, ...productData });
+        }
+
+        // Fetch first 3 services
+        const servicesQuery = query(collection(db, "services"), limit(3));
+        const servicesSnapshot = await getDocs(servicesQuery);
+        const servicesData = servicesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Service));
+        setServices(servicesData);
+
+      } catch (error) {
+        console.error("Error fetching homepage data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -40,7 +88,11 @@ export default function Home() {
         </div>
       </section>
 
-      {seaSaltSpray && (
+      {loading ? (
+         <div className="w-full py-12 md:py-24 bg-primary/10 flex justify-center items-center h-64">
+           <Loader2 className="h-12 w-12 animate-spin text-primary" />
+         </div>
+      ) : seaSaltSpray && (
         <section id="promo" className="w-full py-12 md:py-24 bg-primary/10">
           <div className="container px-4 md:px-6">
             <div className="grid md:grid-cols-2 gap-8 items-center">
@@ -63,7 +115,7 @@ export default function Home() {
               </div>
                <div className="flex justify-center">
                 <Image
-                  src="https://firebasestorage.googleapis.com/v0/b/edenos.firebasestorage.app/o/fadedprod1.jpg?alt=media&token=7043c57a-44be-4e56-9e72-68d0293867b6"
+                  src={seaSaltSpray.image}
                   width={450}
                   height={450}
                   alt={seaSaltSpray.name}
@@ -88,20 +140,26 @@ export default function Home() {
             </div>
           </div>
           <div className="mx-auto grid max-w-5xl items-start gap-6 py-12 lg:grid-cols-3 lg:gap-12">
-            {services.slice(0, 3).map((service) => (
-              <Card key={service.id} className="hover:border-primary transition-colors duration-300">
-                <CardHeader>
-                  <CardTitle className="text-2xl">{service.name}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-muted-foreground">{service.duration} mins</p>
-                  <p className="text-3xl font-bold">₱{service.price.toFixed(2)}</p>
-                  <Button asChild variant="outline" className="w-full">
-                    <Link href={`/select-barber?serviceId=${service.id}`}>Choose this service <ArrowRight className="ml-2 h-4 w-4" /></Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+            {loading ? (
+                Array.from({ length: 3 }).map((_, index) => (
+                    <Card key={index}><CardContent className="p-6 h-60 flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin"/></CardContent></Card>
+                ))
+            ) : (
+                services.map((service) => (
+                <Card key={service.id} className="hover:border-primary transition-colors duration-300">
+                    <CardHeader>
+                    <CardTitle className="text-2xl">{service.name}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                    <p className="text-muted-foreground">{service.duration} mins</p>
+                    <p className="text-3xl font-bold">₱{service.price.toFixed(2)}</p>
+                    <Button asChild variant="outline" className="w-full">
+                        <Link href={`/select-barber?serviceId=${service.id}`}>Choose this service <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                    </Button>
+                    </CardContent>
+                </Card>
+                ))
+            )}
           </div>
           <div className="flex justify-center">
             <Button asChild>

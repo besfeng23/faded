@@ -94,33 +94,4 @@ export const barbers = [
 ];
 
 
-export const products = [
-  {
-    id: "p1",
-    name: "Matte Rock Hair Wax",
-    description: "Strong hold, no shine. Perfect for textured, natural looks.",
-    price: 850,
-    image: "https://firebasestorage.googleapis.com/v0/b/edenos.firebasestorage.app/o/fadedprod1.jpg?alt=media&token=7043c57a-44be-4e56-9e72-68d0293867b6"
-  },
-  {
-    id: "p2",
-    name: "High-Shine Pomade",
-    description: "Classic, slick-back look with a high-shine finish. Water-based.",
-    price: 800,
-    image: "https://firebasestorage.googleapis.com/v0/b/edenos.firebasestorage.app/o/fadedprod1.jpg?alt=media&token=7043c57a-44be-4e56-9e72-68d0293867b6"
-  },
-  {
-    id: "p3",
-    name: "Styling Clay",
-    description: "Medium hold with a matte finish for a voluminous, reworkable style.",
-    price: 900,
-    image: "https://firebasestorage.googleapis.com/v0/b/edenos.firebasestorage.app/o/fadedprod1.jpg?alt=media&token=7043c57a-44be-4e56-9e72-68d0293867b6"
-  },
-    {
-    id: "p4",
-    name: "Sea Salt Spray",
-    description: "Pre-styler for added texture and volume. Creates a beachy, lived-in look.",
-    price: 300,
-    image: "https://firebasestorage.googleapis.com/v0/b/edenos.firebasestorage.app/o/fadedprod1.jpg?alt=media&token=7043c57a-44be-4e56-9e72-68d0293867b6"
-  },
-];
+export const products: any[] = [];
