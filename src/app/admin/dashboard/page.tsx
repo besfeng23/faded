@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Users, LayoutDashboard, Instagram, Facebook } from "lucide-react";
+import { Users, LayoutDashboard, Instagram, Facebook, MessageSquareText } from "lucide-react";
 
 export default function AdminDashboardPage() {
   return (
@@ -23,6 +23,20 @@ export default function AdminDashboardPage() {
           <CardContent>
             <Button asChild>
               <Link href="/admin/social-management">Go to Social Management</Link>
+            </Button>
+          </CardContent>
+        </Card>
+         <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <MessageSquareText className="h-6 w-6" />
+              DM to Booking
+            </CardTitle>
+            <CardDescription>Convert Instagram DM screenshots into bookings using AI.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button asChild>
+              <Link href="/admin/dm-to-booking">Create Booking from DM</Link>
             </Button>
           </CardContent>
         </Card>
