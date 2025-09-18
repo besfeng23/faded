@@ -21,6 +21,15 @@ interface Booking {
     time: string;
     price: number;
     status: string;
+    serviceId: string;
+}
+
+interface Service {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  duration: number;
 }
 
 export default function MyBookingsPage() {
@@ -28,6 +37,7 @@ export default function MyBookingsPage() {
   const router = useRouter();
   const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([]);
   const [pastBookings, setPastBookings] = useState<Booking[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
   const [loadingBookings, setLoadingBookings] = useState(true);
 
   useEffect(() => {
@@ -35,6 +45,17 @@ export default function MyBookingsPage() {
       router.push('/login');
     }
   }, [user, authLoading, router]);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      const servicesCollection = collection(db, 'services');
+      const serviceSnapshot = await getDocs(servicesCollection);
+      const servicesList = serviceSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Service));
+      setServices(servicesList);
+    };
+
+    fetchServices();
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -48,15 +69,19 @@ export default function MyBookingsPage() {
           querySnapshot.forEach((doc) => {
             const data = doc.data();
             const bookingDate = new Date(data.date);
-            // Combine date and time for accurate comparison
-            const [hours, minutes, period] = data.time.match(/(\d+):(\d+) (AM|PM)/).slice(1);
-            let hour = parseInt(hours);
-            if (period === 'PM' && hour !== 12) hour += 12;
-            if (period === 'AM' && hour === 12) hour = 0;
-            bookingDate.setHours(hour, parseInt(minutes));
+            
+            const timeParts = data.time.match(/(\d+):(\d+) (AM|PM)/);
+            if (timeParts) {
+                const [, hours, minutes, period] = timeParts;
+                let hour = parseInt(hours);
+                if (period === 'PM' && hour !== 12) hour += 12;
+                if (period === 'AM' && hour === 12) hour = 0;
+                bookingDate.setHours(hour, parseInt(minutes));
+            }
 
             allUserBookings.push({
               id: doc.id,
+              serviceId: data.serviceId,
               serviceName: data.serviceName,
               barberName: data.barberName,
               date: data.date,
@@ -172,7 +197,7 @@ export default function MyBookingsPage() {
                   </CardContent>
                   <CardFooter className="flex justify-end">
                       <Button asChild>
-                         <Link href={`/select-barber?serviceId=${services.find(s => s.name === booking.serviceName)?.id}`}>Rebook</Link>
+                         <Link href={`/select-barber?serviceId=${booking.serviceId}`}>Rebook</Link>
                       </Button>
                   </CardFooter>
                 </Card>
