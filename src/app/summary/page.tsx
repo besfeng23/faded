@@ -186,7 +186,7 @@ function SummaryComponent() {
               placeholder="e.g., specific style requests, allergies..." 
               className="mt-2" 
               value={notes}
-              onChange={(e) => setNotes(e.g., "e")}
+              onChange={(e) => setNotes(e.target.value)}
               disabled={loading}
             />
           </div>
