@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import {
@@ -45,12 +44,17 @@ export default function LoginPage() {
   }, [user, router]);
   
   useEffect(() => {
-    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-      'size': 'invisible',
-      'callback': (response: any) => {
-        // reCAPTCHA solved, allow signInWithPhoneNumber.
-      }
-    });
+    // It's important that this is only initialized once.
+    // @ts-ignore
+    if (!window.recaptchaVerifier) {
+        // @ts-ignore
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+            'size': 'invisible',
+            'callback': (response: any) => {
+                // reCAPTCHA solved, allow signInWithPhoneNumber.
+            }
+        });
+    }
   }, []);
 
   const handleFacebookSignIn = async () => {
@@ -73,6 +77,7 @@ export default function LoginPage() {
   const handlePhoneSignIn = async () => {
     setLoading(true);
     try {
+      // @ts-ignore
       const verifier = window.recaptchaVerifier;
       const result = await signInWithPhoneNumber(auth, `+${phoneNumber}`, verifier);
       setConfirmationResult(result);
