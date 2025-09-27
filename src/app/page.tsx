@@ -153,7 +153,9 @@ export default function Home() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                     <p className="text-muted-foreground">{service.duration} mins</p>
-                    <p className="text-3xl font-bold">₱{service.price.toFixed(2)}</p>
+                    <p className="text-3xl font-bold">
+                      {typeof service.price === 'number' ? `₱${service.price.toFixed(2)}` : '...'}
+                    </p>
                     <Button asChild variant="outline" className="w-full">
                         <Link href={`/select-barber?serviceId=${service.id}`}>Choose this service <ArrowRight className="ml-2 h-4 w-4" /></Link>
                     </Button>
