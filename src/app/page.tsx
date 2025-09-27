@@ -60,13 +60,14 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <section className="relative w-full h-[60vh] md:h-[80vh] flex items-center justify-center text-center text-white">
+      <section className="relative w-full h-[70vh] md:h-[80vh] flex items-center justify-center text-center text-white">
         <Image
           src="https://firebasestorage.googleapis.com/v0/b/edenos.firebasestorage.app/o/faded2.jpg?alt=media&token=401f0464-7495-4352-9fd3-13ac3b7b5fb4"
           alt="Barbershop interior"
           fill
           className="object-cover -z-10 brightness-50"
           data-ai-hint="barbershop interior"
+          priority
         />
         <div className="container px-4 md:px-6">
           <div className="max-w-3xl mx-auto">
@@ -95,13 +96,13 @@ export default function Home() {
       ) : seaSaltSpray && (
         <section id="promo" className="w-full py-12 md:py-24 bg-primary/10">
           <div className="container px-4 md:px-6">
-            <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-center">
               <div className="text-center md:text-left">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">
-                  Get the Beach Look with our Sea Salt Spray
+                  Get the Beach Look
                 </h2>
                 <p className="mt-4 text-muted-foreground md:text-xl/relaxed">
-                  Experience the volume and texture of our best-selling Sea Salt Spray with any haircut. Love the result? Take a bottle home for just <span className="font-bold text-primary">₱{seaSaltSpray.price.toFixed(2)}!</span>
+                  Experience the volume and texture of our best-selling Sea Salt Spray. Love the result? Take a bottle home for just <span className="font-bold text-primary">₱{seaSaltSpray.price.toFixed(2)}!</span>
                 </p>
                 <p className="mt-2 text-sm text-muted-foreground">Stocks are selling fast, get a bottle now!</p>
                 <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
@@ -119,7 +120,7 @@ export default function Home() {
                   width={450}
                   height={450}
                   alt={seaSaltSpray.name}
-                  className="rounded-lg object-cover shadow-2xl"
+                  className="rounded-lg object-cover shadow-2xl aspect-square"
                   data-ai-hint="hair product"
                 />
               </div>

@@ -144,7 +144,7 @@ export default function BarberManagementPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 order-2 lg:order-1">
           <Card>
             <CardHeader>
               <CardTitle>Existing Barbers</CardTitle>
@@ -155,64 +155,66 @@ export default function BarberManagementPage() {
                   <Loader2 className="h-8 w-8 animate-spin" />
                 </div>
               ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Rating</TableHead>
-                      <TableHead>Skills</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {barbers.map((barber) => (
-                      <TableRow key={barber.id}>
-                        <TableCell className="font-medium">{barber.name}</TableCell>
-                        <TableCell>
-                            <div className="flex items-center gap-1">
-                                <Star className="w-4 h-4 text-primary fill-primary" />
-                                {barber.rating} ({barber.reviews})
-                            </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {barber.skills.map(skill => <Badge key={skill} variant="secondary">{skill}</Badge>)}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button variant="ghost" size="icon" onClick={() => handleEdit(barber)}>
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                           <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="ghost" size="icon">
-                                <Trash className="h-4 w-4 text-destructive" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  This action cannot be undone. This will permanently delete "{barber.name}".
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleDelete(barber.id)}>Delete</AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </TableCell>
+                <div className="w-full overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Rating</TableHead>
+                        <TableHead>Skills</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {barbers.map((barber) => (
+                        <TableRow key={barber.id}>
+                          <TableCell className="font-medium">{barber.name}</TableCell>
+                          <TableCell>
+                              <div className="flex items-center gap-1 whitespace-nowrap">
+                                  <Star className="w-4 h-4 text-primary fill-primary" />
+                                  {barber.rating} ({barber.reviews})
+                              </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-wrap gap-1">
+                              {barber.skills.map(skill => <Badge key={skill} variant="secondary">{skill}</Badge>)}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button variant="ghost" size="icon" onClick={() => handleEdit(barber)}>
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                             <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                  <Trash className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This action cannot be undone. This will permanently delete "{barber.name}".
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => handleDelete(barber.id)}>Delete</AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               )}
             </CardContent>
           </Card>
         </div>
 
-        <div>
+        <div className="lg:col-span-1 order-1 lg:order-2">
           <Card>
             <CardHeader>
               <CardTitle>{editingBarber ? "Edit Barber" : "Add New Barber"}</CardTitle>

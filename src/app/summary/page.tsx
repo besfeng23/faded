@@ -156,7 +156,7 @@ function SummaryComponent() {
           <CardTitle className="text-3xl font-headline">Confirm Your Booking</CardTitle>
           <CardDescription>Please review your appointment details below.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-6 pb-20 md:pb-6">
           <div className="space-y-4 rounded-lg border p-4">
             <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Service</span>
@@ -204,7 +204,7 @@ function SummaryComponent() {
             </div>
           </div>
           
-          <div className="fixed bottom-0 left-0 right-0 p-4 bg-background border-t md:static md:p-0 md:border-none">
+          <div className="fixed bottom-0 left-0 right-0 p-4 bg-background border-t md:static md:p-0 md:border-none z-10">
             <Button onClick={handleConfirmBooking} className="w-full h-12 text-lg" disabled={loading || authLoading}>
               {loading ? <Loader2 className="animate-spin" /> : "Confirm Booking"}
             </Button>
