@@ -104,7 +104,7 @@ export function Header() {
                 <SheetTitle>
                    <Link href="/" className="flex items-center space-x-2" onClick={() => setIsSheetOpen(false)}>
                     <Scissors className="h-6 w-6 text-primary" />
-                    <span className="font-bold">Faded</span>
+                    <span className="font-bold font-headline">Faded</span>
                   </Link>
                 </SheetTitle>
                 <SheetDescription>

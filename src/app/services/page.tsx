@@ -59,7 +59,7 @@ export default function ServicesPage() {
           {services.map((service) => (
             <Card key={service.id} className="flex flex-col">
               <CardHeader>
-                <CardTitle className="text-2xl">{service.name}</CardTitle>
+                <CardTitle className="text-2xl font-headline">{service.name}</CardTitle>
                 <CardDescription>{service.description}</CardDescription>
               </CardHeader>
               <CardContent className="flex-grow space-y-4">

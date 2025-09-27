@@ -140,7 +140,7 @@ function SummaryComponent() {
   if (!service || !barber || !date || !time) {
     return (
       <div className="container mx-auto py-12 text-center">
-        <h1 className="text-2xl font-bold">Incomplete Booking Details</h1>
+        <h1 className="text-2xl font-bold font-headline">Incomplete Booking Details</h1>
         <p className="text-muted-foreground">There was an issue with your selection. Please start over.</p>
         <Button asChild className="mt-4">
           <Link href="/services">Back to Services</Link>

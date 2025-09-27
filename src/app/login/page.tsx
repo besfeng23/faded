@@ -114,12 +114,10 @@ export default function LoginPage() {
           <CardDescription>Sign in to manage your bookings.</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
-          <div className="grid gap-2">
-            <Button variant="outline" onClick={handleFacebookSignIn}>
-              <FacebookIcon className="mr-2 h-4 w-4" />
-              Continue with Facebook
-            </Button>
-          </div>
+          <Button variant="outline" onClick={handleFacebookSignIn}>
+            <FacebookIcon className="mr-2 h-4 w-4" />
+            Continue with Facebook
+          </Button>
           <p className="text-xs text-muted-foreground text-center">Use Facebook to sign in with your Instagram account.</p>
           <div className="relative">
             <div className="absolute inset-0 flex items-center">

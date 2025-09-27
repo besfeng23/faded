@@ -113,7 +113,7 @@ function PickSlotComponent() {
   if (!service || !barber) {
     return (
       <div className="container mx-auto py-12 text-center">
-        <h1 className="text-2xl font-bold">Invalid selection</h1>
+        <h1 className="text-2xl font-bold font-headline">Invalid selection</h1>
         <p className="text-muted-foreground">Please go back and select a service and barber.</p>
         <Button asChild className="mt-4">
           <Link href="/services">Go to Services</Link>

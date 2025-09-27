@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Star } from "lucide-react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase-client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -45,10 +45,10 @@ function BarberSelection() {
             }
             setLoading(true);
             try {
-                const servicesSnapshot = await getDocs(collection(db, "services"));
-                const allServices = servicesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Service));
-                const currentService = allServices.find(s => s.id === serviceId);
-                setService(currentService || null);
+                const serviceDoc = await getDoc(doc(db, "services", serviceId));
+                if (serviceDoc.exists()) {
+                    setService({ id: serviceDoc.id, ...serviceDoc.data() } as Service);
+                }
 
                 const barbersSnapshot = await getDocs(collection(db, "barbers"));
                 const barbersData = barbersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Barber));
@@ -71,7 +71,7 @@ function BarberSelection() {
     if (!service) {
         return (
             <div className="text-center">
-                <h2 className="text-xl font-semibold">Service not found</h2>
+                <h2 className="text-xl font-semibold font-headline">Service not found</h2>
                 <p className="text-muted-foreground">Please select a service first.</p>
                 <Button asChild className="mt-4">
                     <Link href="/services">Back to Services</Link>
