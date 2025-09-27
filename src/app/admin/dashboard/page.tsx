@@ -29,7 +29,7 @@ export default function AdminDashboardPage() {
               <Facebook className="h-6 w-6" />
               Social Media
             </CardTitle>
-            <CardDescription>Manage your Facebook and Instagram posts.</CardDescription>
+            <CardDescription>Generate posts and manage your social presence.</CardDescription>
           </CardHeader>
           <CardContent>
             <Button asChild>
