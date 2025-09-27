@@ -7,11 +7,21 @@ import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { services, barbers } from "@/lib/data";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase-client";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+interface Service {
+    id: string;
+    name: string;
+    price: number;
+}
+
+interface Barber {
+    id: string;
+    name: string;
+}
 
 function PickSlotComponent() {
   const searchParams = useSearchParams();
@@ -22,10 +32,36 @@ function PickSlotComponent() {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
+  const [service, setService] = useState<Service | null>(null);
+  const [barber, setBarber] = useState<Barber | null>(null);
+  const [loadingDetails, setLoadingDetails] = useState(true);
   const { toast } = useToast();
 
-  const service = services.find((s) => s.id === serviceId);
-  const barber = barbers.find((b) => b.id === barberId);
+  useEffect(() => {
+    const fetchDetails = async () => {
+        if (!serviceId || !barberId) {
+            setLoadingDetails(false);
+            return;
+        }
+        try {
+            const serviceDoc = await getDoc(doc(db, "services", serviceId));
+            if (serviceDoc.exists()) {
+                setService({ id: serviceDoc.id, ...serviceDoc.data() } as Service);
+            }
+
+            const barberDoc = await getDoc(doc(db, "barbers", barberId));
+            if (barberDoc.exists()) {
+                setBarber({ id: barberDoc.id, ...barberDoc.data() } as Barber);
+            }
+        } catch (error) {
+            console.error("Error fetching service/barber details:", error);
+            toast({ variant: "destructive", title: "Error", description: "Could not load booking details." });
+        } finally {
+            setLoadingDetails(false);
+        }
+    };
+    fetchDetails();
+  }, [serviceId, barberId, toast]);
 
   // Mock time slots
   const timeSlots = [
@@ -42,17 +78,13 @@ function PickSlotComponent() {
         setIsLoadingSlots(true);
         setSelectedTime(null); // Reset selected time when date changes
         try {
-            const startOfDay = new Date(date);
-            startOfDay.setHours(0, 0, 0, 0);
-            
-            const endOfDay = new Date(date);
-            endOfDay.setHours(23, 59, 59, 999);
+            const selectedDate = date.toISOString().split('T')[0];
 
             const q = query(
                 collection(db, "bookings"),
                 where("barberId", "==", barberId),
-                where("date", ">=", startOfDay.toISOString()),
-                where("date", "<=", endOfDay.toISOString())
+                where("date", ">=", `${selectedDate}T00:00:00.000Z`),
+                where("date", "<=", `${selectedDate}T23:59:59.999Z`)
             );
 
             const querySnapshot = await getDocs(q);
@@ -74,6 +106,9 @@ function PickSlotComponent() {
     fetchBookedSlots();
   }, [date, barberId, toast]);
 
+  if (loadingDetails) {
+     return <div className="flex justify-center items-center h-[calc(100vh-8rem)]"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div>;
+  }
 
   if (!service || !barber) {
     return (

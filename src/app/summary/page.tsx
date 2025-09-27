@@ -1,21 +1,30 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { services, barbers } from "@/lib/data";
 import Link from "next/link";
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase-client';
 import { Loader2 } from 'lucide-react';
 import { Suspense } from 'react';
 
+interface Service {
+    id: string;
+    name: string;
+    price: number;
+}
+
+interface Barber {
+    id: string;
+    name: string;
+}
 
 function SummaryComponent() {
   const router = useRouter();
@@ -29,10 +38,39 @@ function SummaryComponent() {
   const barberId = searchParams.get("barberId");
   const dateStr = searchParams.get("date");
   const time = searchParams.get("time");
+  
+  const [service, setService] = useState<Service | null>(null);
+  const [barber, setBarber] = useState<Barber | null>(null);
+  const [loadingDetails, setLoadingDetails] = useState(true);
 
-  const service = services.find((s) => s.id === serviceId);
-  const barber = barbers.find((b) => b.id === barberId);
   const date = dateStr ? new Date(dateStr) : null;
+
+   useEffect(() => {
+    const fetchDetails = async () => {
+        if (!serviceId || !barberId) {
+            setLoadingDetails(false);
+            return;
+        }
+        try {
+            const serviceDoc = await getDoc(doc(db, "services", serviceId));
+            if (serviceDoc.exists()) {
+                setService({ id: serviceDoc.id, ...serviceDoc.data() } as Service);
+            }
+
+            const barberDoc = await getDoc(doc(db, "barbers", barberId));
+            if (barberDoc.exists()) {
+                setBarber({ id: barberDoc.id, ...barberDoc.data() } as Barber);
+            }
+        } catch (error) {
+            console.error("Error fetching service/barber details:", error);
+            toast({ variant: "destructive", title: "Error", description: "Could not load booking details." });
+        } finally {
+            setLoadingDetails(false);
+        }
+    };
+    fetchDetails();
+  }, [serviceId, barberId, toast]);
+
 
   const handleConfirmBooking = async () => {
     if (!user) {
@@ -91,7 +129,7 @@ function SummaryComponent() {
     }
   };
 
-  if (authLoading) {
+  if (authLoading || loadingDetails) {
      return (
       <div className="flex justify-center items-center h-[calc(100vh-8rem)]">
         <Loader2 className="h-16 w-16 animate-spin text-primary" />
@@ -185,5 +223,3 @@ export default function SummaryPage() {
     </Suspense>
   )
 }
-
-    

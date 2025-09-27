@@ -1,19 +1,72 @@
+
 "use client";
 
 import Link from "next/link";
 import { useSearchParams } from 'next/navigation';
-import { Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Star } from "lucide-react";
-import { services, barbers } from "@/lib/data";
+import { Loader2, Star } from "lucide-react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase-client";
+import { useToast } from "@/hooks/use-toast";
+
+interface Service {
+  id: string;
+  name: string;
+  price: number;
+  duration: number;
+}
+
+interface Barber {
+  id: string;
+  name: string;
+  avatar: string;
+  rating: number;
+  reviews: number;
+  skills: string[];
+}
 
 function BarberSelection() {
     const searchParams = useSearchParams();
     const serviceId = searchParams.get('serviceId');
-    const service = services.find(s => s.id === serviceId);
+    const [service, setService] = useState<Service | null>(null);
+    const [barbers, setBarbers] = useState<Barber[]>([]);
+    const [loading, setLoading] = useState(true);
+    const { toast } = useToast();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (!serviceId) {
+                setLoading(false);
+                return;
+            }
+            setLoading(true);
+            try {
+                const servicesSnapshot = await getDocs(collection(db, "services"));
+                const allServices = servicesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Service));
+                const currentService = allServices.find(s => s.id === serviceId);
+                setService(currentService || null);
+
+                const barbersSnapshot = await getDocs(collection(db, "barbers"));
+                const barbersData = barbersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Barber));
+                setBarbers(barbersData);
+
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                toast({ variant: "destructive", title: "Error", description: "Could not fetch barbers or services." });
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, [serviceId, toast]);
+
+    if (loading) {
+        return <div className="flex justify-center items-center h-64"><Loader2 className="h-12 w-12 animate-spin text-primary"/></div>;
+    }
 
     if (!service) {
         return (
@@ -70,7 +123,7 @@ function BarberSelection() {
 export default function SelectBarberPage() {
     return (
         <div className="container mx-auto py-12 px-4">
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<div className="flex justify-center items-center h-64"><Loader2 className="h-12 w-12 animate-spin text-primary"/></div>}>
                 <BarberSelection />
             </Suspense>
         </div>
