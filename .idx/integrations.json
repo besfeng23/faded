@@ -1,3 +1,5 @@
 {
-  "firebase_hosting": {}
+  "firebase_hosting": {
+    "deploymentHostingUrl": "https://agile-anagram-469914-e2.web.app"
+  }
 }
