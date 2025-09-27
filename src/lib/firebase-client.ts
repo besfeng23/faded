@@ -2,15 +2,16 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-    measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+    apiKey: "AIzaSyAvjVjhXFMI7QNJ-RFXiTOj5zm2MlYNGME",
+    authDomain: "agile-anagram-469914-e2.firebaseapp.com",
+    projectId: "agile-anagram-469914-e2",
+    storageBucket: "agile-anagram-469914-e2.appspot.com",
+    messagingSenderId: "78849214378",
+    appId: "1:78849214378:web:0f8ec9ab62dd966bc68dd3",
+    measurementId: "G-Z46NM7ESV6"
 };
 
 // Initialize Firebase
@@ -18,6 +19,10 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
+let analytics;
+if (typeof window !== 'undefined') {
+    analytics = getAnalytics(app);
+}
 
 
-export { app, auth, db, storage };
+export { app, auth, db, storage, analytics };
